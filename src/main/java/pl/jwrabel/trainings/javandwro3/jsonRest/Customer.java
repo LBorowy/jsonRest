@@ -1,12 +1,18 @@
 package pl.jwrabel.trainings.javandwro3.jsonRest;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Created by RENT on 2017-05-25.
  */
 public class Customer {
+    @JsonProperty("imię")
     private String firstName;
+    @JsonProperty("nazwisko")
     private String lastName;
     private int birthYear;
+    @JsonIgnore
     private String idNumber;
 
     public Customer(){}
