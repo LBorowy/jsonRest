@@ -1,18 +1,47 @@
 package pl.jwrabel.trainings.javandwro3.jsonRest.Unirest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.mashape.unirest.http.ObjectMapper;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 /**
  * Created by RENT on 2017-05-26.
  */
 public class UnirestTest {
-    public static void main(String[] args) throws UnirestException {
+    public static void main(String[] args) throws UnirestException, IOException {
+
+        // CRUD -> określenie funkcjonalności Create, Retrieve, Update, Delete
+
+        // 2 sposoby przekazywania parametrów
+        // 1. Path Variable/Path Param -> zmienna przekazywana jako część adresu,
+        // 		np. w /customer/123 123 to przekazywane id, reprezentuje się to często w sposób /customers/{id}
+        // 2. Request Param -> parametry przekazywane "po znaku zapytania", np. żeby przekazać
+        //		parametry name i surname wywołujemy /hi?name=Adam&surname=Kowalski,
+        //		kilka parametrów łączymy "&"
+
+        // główne typy zapytań w REST
+        // GET - służy do pobierania danych - odpowiednik Retrieve z CRUD, WAŻNE: NIE MA CIAŁA
+        // POST - służy do tworzenia obiektów (lub uruchamiania akcji), odpowiednik Create z CRUD
+        // PUT - służy do aktualizowania danych, odpowiednik Update z CRUD
+        // DELETE - służy do usuwania, odpowiednik Delete z CRUD
+
+        // ENDPOINTY MOJEGO SERWERA - API
+        // GET: 195.181.209.160:8080/api/v1/customers -> lista wszystkich klientów (JSON)
+        // GET: 195.181.209.160:8080/api/v1/customers/{id} -> dane klienta o podanym id (JSON)
+        // POST: 195.181.209.160:8080/api/v1/customers -> stwórz klienta (w ciele żądania JSON z danymi klienta)
+        // PUT: 195.181.209.160:8080/api/v1/customers/{id} -> zaktualizuj  klienta o podanym id (w ciele żądania JSON z danymi klienta)
+        // DELETE: 195.181.209.160:8080/api/v1/customers/{id} -> usuń  klienta o podanym id
+
+
+
+
+
         // Zapytanie - odpowiedź = String (Hello World from Jakub)
         String simpleResponse = Unirest.get("http://195.181.209.160:8080/hi").asString().getBody();
         System.out.println(simpleResponse);
@@ -59,10 +88,10 @@ public class UnirestTest {
         });
 
         // Pobranie jednego klienta (o ID string) i automatyczna zamiana
-        // odpowiedzi serwera (JSONa z klientem) na obiekt klasy Customer
-        Customer returnedCustomer = Unirest.get("http://195.181.209.160:8080/api/v1/customers/cfae8f41-e4f1-40a7-8598-db8430908111")
-                .asObject(Customer.class).getBody();
-        System.out.println(returnedCustomer);
+        // odpowiedzi serwera (JSONa z klientem) na obiekt klasy Customer (!!!!!!!)
+//        Customer returnedCustomer = Unirest.get("http://195.181.209.160:8080/api/v1/customers/cfae8f41-e4f1-40a7-8598-db8430908111")
+//                .asObject(Customer.class).getBody();
+//        System.out.println(returnedCustomer);
 //
 //		// Pobranie wszystkich klientów i automatyczna zamiana
 //		// odpowiedzi serwera (JSONa z kolekcją klientów) na tablicę obiektów klasy Customer
@@ -86,6 +115,18 @@ public class UnirestTest {
 				.header("Content-Type", "application/json")
 				.body(customer).asString().getBody();
 		System.out.println(postResponse);
+
+		// Pobranie wszystkich klientów i zamienienie na listę obiektów klasy CUSTOMER
+        String allCustomerJson = Unirest.get("http://195.181.209.160:8080/api/v1/customers").asString().getBody();
+
+        com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
+        List<Customer> allCustomerList = objectMapper.readValue(allCustomerJson, TypeFactory.defaultInstance().constructCollectionType(List.class, Customer.class));
+
+        for (Customer customer1 : allCustomerList) {
+            System.out.println(customer1);
+        }
+
+
 //
 //
 //		// Wyciąganie elementów jsona z użyciem JsonNode -> chodzenie po JSONie bez konieczności mapowania na obiekty
