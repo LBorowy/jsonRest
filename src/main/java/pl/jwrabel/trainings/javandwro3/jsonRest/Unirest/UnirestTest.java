@@ -60,7 +60,7 @@ public class UnirestTest {
 
         // Pobranie jednego klienta (o ID string) i automatyczna zamiana
         // odpowiedzi serwera (JSONa z klientem) na obiekt klasy Customer
-        Customer returnedCustomer = Unirest.get("http://195.181.209.160:8080/api/v1/customers/67")
+        Customer returnedCustomer = Unirest.get("http://195.181.209.160:8080/api/v1/customers/cfae8f41-e4f1-40a7-8598-db8430908111")
                 .asObject(Customer.class).getBody();
         System.out.println(returnedCustomer);
 //
